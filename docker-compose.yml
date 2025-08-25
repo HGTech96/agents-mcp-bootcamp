@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: amcp_postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-amcp}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-amcp}
+      POSTGRES_DB: ${DB_NAME:-amcp}
+    ports:
+      # Use 5433 on host to avoid clashing with any local Postgres
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-amcp} -d ${DB_NAME:-amcp}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:
